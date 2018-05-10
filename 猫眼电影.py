@@ -19,6 +19,7 @@ try:
         req = request.Request(url + "?offset=" + str(i), headers=headers, method= 'GET')
         res = request.urlopen(req)
         data = res.read().decode("utf-8")
+        # 使用正则表达式提取数据
         moiveId = r'<i class="board-index board-index-(.*?)"'
         Ids = re.compile(moiveId).findall(data)
         print("已爬取到" + str(len(Ids)) + "条Id")
@@ -28,6 +29,7 @@ try:
         moivelImg = r'<img data-src="(.*?)" alt='
         Imgs = re.compile(moivelImg).findall(data)
         print("已爬取到" + str(len(Imgs)) + "条Img")
+        # 遍历img列表 下载图片
         for img in Imgs:
             request.urlretrieve(img, "猫眼电影/" + str(j) + ".jpg")
             j += 1
@@ -41,7 +43,7 @@ try:
         Grades = re.compile(moiveGrade).findall(data)
         print("已爬取到" + str(len(Grades)) + "条Grade")
         zippeds = zip(Ids, Titles, Stars, Times, Grades)
-        # 存入文件
+        # 将信息存入文件
         for zipped in zippeds:
             p = document.add_paragraph('No :' + str(zipped[0]) + '\n电影名 :' + str(zipped[1]) + "\n" + str(zipped[2]) + "\n上映时间 :" + str(zipped[3]) + '\n评分 :' + zipped[4][0] + zipped[4][1])
             document.add_picture('猫眼电影/' + zipped[0] + ".jpg")
@@ -50,5 +52,5 @@ except error.HTTPError as e:
     print(e.reason)
 except error.URLError as e:
     print(e.reason)
-
+# 保存文件
 document.save('猫眼电影.docx')
